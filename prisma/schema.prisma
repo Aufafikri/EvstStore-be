@@ -1,0 +1,208 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum LoginMethod {
+  LOCAL
+  GOOGLE
+  GITHUB
+}
+
+model User {
+  id           String      @id @default(cuid())
+  email        String      @unique
+  password     String?
+  name         String
+  profileImage String?
+  googleId     String?     @unique
+  githubId     String?     @unique
+  loginMethod  LoginMethod @default(LOCAL)
+  isVerified   Boolean     @default(false)
+
+  otpCode    String?
+  otpExpires DateTime?
+
+  role Role @default(USER)
+
+  Merchant Merchant?
+
+  Order        Order[]
+  Address      Address[]
+  Review       Review[]
+  RefreshToken RefreshToken[]
+  Otp          Otp[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Otp {
+  id     String @id @default(cuid())
+  otp    String @unique
+  User   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}
+
+enum Role {
+  USER
+  ADMIN
+  MERCHANT
+}
+
+model Merchant {
+  id               String  @id @default(cuid())
+  storeName        String
+  storeDescription String
+  image            String?
+
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+
+  Product Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  expiresAt DateTime
+
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  price       Int
+  stock       Int
+  image       String[]
+
+  Category   Category? @relation(fields: [categoryId], references: [id])
+  categoryId String
+  Merchant   Merchant? @relation(fields: [merchantId], references: [id])
+  merchantId String?
+
+  OrderItem OrderItem[]
+  Review    Review[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id          String  @id @default(cuid())
+  name        String  @unique
+  type        String?
+  label       String?
+  size        String?
+  brand       String?
+  description String?
+
+  Product Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELED
+}
+
+model Order {
+  id        String  @id @default(cuid())
+  User      User    @relation(fields: [userId], references: [id])
+  userId    String
+  Address   Address @relation(fields: [addressId], references: [id])
+  addressId String
+
+  totalAmount Int
+  status      OrderStatus @default(PENDING)
+
+  Payment   Payment?
+  OrderItem OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  Order     Order   @relation(fields: [orderId], references: [id])
+  orderId   String
+  Product   Product @relation(fields: [productId], references: [id])
+  productId String
+
+  quantity Int
+  price    Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Payment {
+  id      String @id @default(cuid())
+  Order   Order  @relation(fields: [orderId], references: [id])
+  orderId String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Address {
+  id   String @id @default(cuid())
+  User User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  userId      String
+  country     String
+  province    String?
+  city        String
+  district    String?
+  subdistrict String?
+  zipCode     String?
+  street      String?
+  description String?
+
+  Order Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Review {
+  id        String  @id @default(cuid())
+  User      User    @relation(fields: [userId], references: [id])
+  userId    String
+  Product   Product @relation(fields: [productId], references: [id])
+  productId String
+
+  rating  Int
+  comment String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
