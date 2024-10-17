@@ -79,4 +79,16 @@ export class ProductsService {
           throw new Error('Failed to create product');
       }
     }
+
+    public async getAllProducts() {
+        return this.prisma.product.findMany({})
+    }
+
+    public async getProductById(productId: string) {
+        return this.prisma.product.findUnique({
+            where: {
+                id: productId
+            }
+        })
+    }
 }

@@ -8,15 +8,28 @@ import {
   UploadedFile,
   UploadedFiles,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.auth.guard'
 import { UploadProductImages } from 'src/decorators/uploadProductImage';
+import { GetAllProductsInterceptor } from './interceptors/getAll-products.interceptor';
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
+
+  @Get()
+  @UseInterceptors(GetAllProductsInterceptor)
+  public async getAllProducts() {
+    return this.productsService.getAllProducts()
+  }
+
+  @Get('/:productId')
+  public async getProductById(@Param('productId') productId: string ) {
+    return this.productsService.getProductById(productId)
+  }
 
   @Post('/:merchantId')
   @UploadProductImages()

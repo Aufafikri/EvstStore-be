@@ -81,10 +81,9 @@ export class AuthController {
   @Get('/github/callback')
   @UseGuards(GithubAuthGuard)
   async githubCallback(@Req() req, @Res() res: Response) {
-    const { user, accessToken } = req.user; // Payload dari GitHubStrategy
-
-    // Kirimkan respons sesuai dengan kebutuhan, misal redirect ke frontend dengan token JWT
-    return res.redirect(`http://localhost:3000/verification/google-callback?token=${accessToken}`);
+    const user = req.user.user
+    const accessToken = this.jwtService.sign({ sub: user.id, email: user.email })
+    return res.redirect(`http://localhost:3000/verification/github-callback?token=${accessToken}`);
   }
 
   @Post('/forgot-password')
