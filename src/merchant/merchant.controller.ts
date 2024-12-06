@@ -31,6 +31,12 @@ export class MerchantController {
     return merchant;
   }
 
+  // @UseGuards(JwtAuthGuard)
+  @Get('/product/:merchantId')
+  public async getMerchantById(@Param('merchantId') merchantId: string ) {
+    return this.merchantService.getMerchantById(merchantId)
+  }
+
   @UseGuards(JwtAuthGuard)
   @Post()
   @UploadMerchantImage()

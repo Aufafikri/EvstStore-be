@@ -81,13 +81,20 @@ export class ProductsService {
     }
 
     public async getAllProducts() {
-        return this.prisma.product.findMany({})
+        return this.prisma.product.findMany({
+            include: {
+                Category: true
+            }
+        })
     }
 
     public async getProductById(productId: string) {
         return this.prisma.product.findUnique({
             where: {
-                id: productId
+                id: productId,
+            },
+            include: {
+                Merchant: true
             }
         })
     }

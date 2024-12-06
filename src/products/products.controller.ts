@@ -15,11 +15,14 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.auth.guard'
 import { UploadProductImages } from 'src/decorators/uploadProductImage';
 import { GetAllProductsInterceptor } from './interceptors/getAll-products.interceptor';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
 
+// @SkipThrottle()
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
+  // @Throttle({ default: { limit: 3, ttl: 10000 } })
   @Get()
   @UseInterceptors(GetAllProductsInterceptor)
   public async getAllProducts() {

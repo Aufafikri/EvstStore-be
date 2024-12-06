@@ -6,7 +6,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
 import { UploadProfileImage } from 'src/decorators/uploadProfileImage';
 import { UpdateUserDto } from './dto/update-user.dto';
-
+import { SkipThrottle } from '@nestjs/throttler';
+// @SkipThrottle()
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -16,16 +17,16 @@ export class UsersController {
     return this.usersService.getAllUsers()
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('/profile')
-  public async getUserProfile(@Request() req) {
-    const userProfile = await this.usersService.getUserById(req.user.id);
+  @UseGuards(JwtAuthGuard)
+  public async getUserProfile(@Request() req: any) {
+    return await this.usersService.getUserById(req.user.id);
 
-    if(!userProfile.isVerified) {
-      throw new UnauthorizedException('user is not verified')
-    }
+    // if(!userProfile.isVerified) {
+    //   throw new UnauthorizedException('user is not verified')
+    // }
     
-    return userProfile;
+    // return userProfile;
   }
 
   @Get('/:userId')
@@ -80,11 +81,31 @@ export class UsersController {
   public async deleteProfileImage(@Param('userId') userId: string) {
     return this.usersService.deleteProfileImage(userId)
   }
-  
 
   @UseGuards(JwtAuthGuard)
-  @Delete('/delete-account/:userId')
-  public async deleteUser(@Param('userId') userId: string ) {
-    return this.usersService.deleteUser(userId)
+  @Patch('/profile/phone/:userId') 
+  public async updateProfilePhone(@Param('userId') userId: string, @Body() updateProfilePhone: UpdateUserDto  ) {
+    console.log(updateProfilePhone)
+    return this.usersService.updatePhoneNumber(userId, { phoneNumber: updateProfilePhone.phoneNumber })
   }
+  
+
+  // @UseGuards(JwtAuthGuard)
+  // @Delete('/delete-account/:userId')
+  // public async deleteUser(@Param('userId') userId: string ) {
+  //   return this.usersService.deleteUser(userId)
+  // }
+  
+  @UseGuards(JwtAuthGuard)
+  @Patch('/phone/number/:userId')
+  public async deletePhoneNumber(@Param("userId") userId: string) {
+    console.log(this.deletePhoneNumber)
+    return this.usersService.deletePhoneNumber(userId)
+  }
+
+  @Delete('/asli/:userId')
+  public async deleteUserAccountById(@Param('userId') userId: string ){
+    return this.deleteUserAccountById(userId)
+  }
+
 }

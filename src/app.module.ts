@@ -17,16 +17,22 @@ import { AdminModule } from './admin/admin.module';
 import { AddressModule } from './address/address.module';
 import { GoogleStrategy } from './auth/strategies/google.strategy';
 import { GithubStrategy } from './auth/strategies/github.strategy';
-
+import { TransactionModule } from './transaction/transaction.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
+import { APP_GUARD } from '@nestjs/core';
 @Module({
   imports: [
     JwtModule.register({
       global: true,
-      secret: process.env.JWT_SECRET || 'default secret',
+      secret: process.env.JWT_SECRET,
       signOptions: {
         expiresIn: process.env.JWT_EXPIRES_IN,
       },
     }),
+    ThrottlerModule.forRoot([{
+      ttl: 0,
+      limit: 0
+    }]),
     MulterModule.register({
       dest: join(__dirname, '..', 'uploads/profile-images')
     }),
@@ -49,8 +55,13 @@ import { GithubStrategy } from './auth/strategies/github.strategy';
     MerchantModule,
     AdminModule,
     AddressModule,
+    TransactionModule,
   ],
   controllers: [AppController],
-  providers: [AppService, JwtStrategy, GoogleStrategy, GithubStrategy],
+  providers: [AppService, JwtStrategy, GoogleStrategy, GithubStrategy, {
+    provide: APP_GUARD,
+    useClass: ThrottlerGuard
+  }],
+  exports: [JwtModule]
 })
 export class AppModule {}

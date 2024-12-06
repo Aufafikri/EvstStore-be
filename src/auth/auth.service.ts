@@ -13,8 +13,8 @@ export class AuthService {
     private readonly prisma: PrismaService,
   ) {}
 
-  public async login(dataLogin: LoginDto) {
-    const { email, password } = dataLogin;
+  public async login(loginDto: LoginDto) {
+    const { email, password } = loginDto;
     const user = await this.usersService.getUserByEmail(email);
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
@@ -26,46 +26,48 @@ export class AuthService {
       email: user.email,
     };
 
-    const accessToken = this.jwtService.sign(payload, { expiresIn: '60m' })
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' })
+    const access_token = this.jwtService.sign(payload, { expiresIn: '60m' })
+    const refresh_token = this.jwtService.sign(payload, { expiresIn: '7d' })
 
     await this.prisma.refreshToken.create({
         data: {
-            token: refreshToken,
+            token: refresh_token,
             userId: user.id,
             expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         }
     })
 
     return {
-      access_token: accessToken,
-      refresh_Token: refreshToken,
-      isVerified: user.isVerified
+      access_token: access_token,
+      refresh_token: refresh_token,
+      // isVerified: user.isVerified
     };
   }
   
   public async refresh(refreshToken: string) {
-    if (!refreshToken) {
-      throw new UnauthorizedException('Refresh token is required');
-  }
-    const tokenRecord = await this.prisma.refreshToken.findUnique({
+    try {
+      const decoded = this.jwtService.verify(refreshToken);
+      const { sub: userId } = decoded;
+
+      const storedToken = await this.prisma.refreshToken.findUnique({
         where: {
-            token: refreshToken
-        }
-    })
+          token: refreshToken,
+        },
+      });
 
-    if(!tokenRecord) {
-        throw new UnauthorizedException('invalid refresh token')
-    }
+      if (!storedToken) {
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+      const payload = { sub: userId };
+      const newAccessToken = this.jwtService.sign(payload, {
+        expiresIn: '15m',
+      });
 
-    const payload = this.jwtService.verify(refreshToken)
-    const newAccessToken = this.jwtService.sign({
-        sub: payload.sub,
-        email: payload.email
-    })
-
-    return {
-        access_token: newAccessToken
+      return {
+        access_token: newAccessToken,
+      };
+    } catch (error) {
+      throw new UnauthorizedException('Invalid or expired refresh token');
     }
   }
 

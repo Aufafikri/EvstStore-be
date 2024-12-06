@@ -19,6 +19,20 @@ export class MerchantService {
         return this.prisma.merchant.findUnique({
             where: {
                 userId
+            },
+            include: {
+                Product: true
+            }
+        })
+    }
+
+    public async getMerchantById(merchantId: string) {
+        return this.prisma.merchant.findUnique({
+            where: {
+                id: merchantId
+            },
+            include: {
+                Product: true
             }
         })
     }

@@ -347,4 +347,35 @@ export class UsersService {
       throw new Error('Invalid or expired token');
     }
   }
+
+  public async updatePhoneNumber(id: string, updateProfilePhone: UpdateUserDto) {
+    const { phoneNumber } = updateProfilePhone
+    return this.prisma.user.update({
+      where: {
+        id
+      },
+      data: {
+        phone: phoneNumber
+      }
+    })
+  }
+
+  public async deleteAccountById(userId: string) {
+    return this.prisma.user.delete({
+      where: {
+        id: userId
+      }
+    })
+  }
+
+  public async deletePhoneNumber(userId: string) {
+    return this.prisma.user.update({
+      where: {
+        id: userId
+      },
+      data: {
+        phone: null
+      }
+    })
+  }
 }

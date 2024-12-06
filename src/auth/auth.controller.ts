@@ -118,13 +118,13 @@ export class AuthController {
   }
 
   @Post('/login')
-  @UseInterceptors(LoginUserInterceptor)
+  // @UseInterceptors(LoginUserInterceptor)
   public async login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
 
-  @Post('refresh')
-  async refresh(@Body() refreshTokenDto: RefreshTokenDto) {
-    return this.authService.refresh(refreshTokenDto.refreshToken);
+  @Post('/refresh-token')
+  public async refresh(@Body('refresh_token') refreshToken: string) {
+    return this.authService.refresh(refreshToken);
   }
 }

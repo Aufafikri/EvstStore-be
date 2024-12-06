@@ -7,4 +7,8 @@ export class UpdateUserDto {
     @IsString()
     @IsOptional()
     profileImage?: string
+
+    @IsString()
+    @IsOptional()
+    phoneNumber?: number
 }
