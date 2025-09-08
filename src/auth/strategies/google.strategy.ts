@@ -45,7 +45,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
           googleId: id,
           email: emails[0].value,
           name: displayName,
-          profileImage: photos[0].value,
+          avatar: photos[0].value,
           isVerified: true,
           loginMethod: 'GOOGLE',
         }

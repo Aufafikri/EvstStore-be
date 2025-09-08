@@ -35,8 +35,8 @@ export class UsersService {
       }
     });
 
-    if(user && user.profileImage) {
-      user.profileImage = `http://localhost:5000/${user.profileImage.replace(/\\/g, '/')}` 
+    if(user && user.avatar) {
+      user.avatar = `http://localhost:5000/${user.avatar.replace(/\\/g, '/')}` 
   }
 
     return user
@@ -155,7 +155,7 @@ export class UsersService {
 
     if(!user) throw new NotFoundException('user not found')
 
-    const result = await this.cloudinaryService.uploadImage(file.path)
+    const result = await this.cloudinaryService.uploadImage(file)
 
     return this.prisma.user.update({
       where: {
@@ -173,7 +173,7 @@ export class UsersService {
         id: userId
       },
       data: {
-        profileImage: null
+        avatar: null
       }
     })
   }

@@ -22,6 +22,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
 import { APP_GUARD } from '@nestjs/core';
 import { CategoriesModule } from './categories/categories.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { CloudinaryService } from './cloudinary/cloudinary.service';
 @Module({
   imports: [
     JwtModule.register({
@@ -62,7 +63,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     CloudinaryModule
   ],
   controllers: [AppController],
-  providers: [AppService, JwtStrategy, GoogleStrategy, GithubStrategy, {
+  providers: [AppService, JwtStrategy, GoogleStrategy, GithubStrategy, CloudinaryService,{
     provide: APP_GUARD,
     useClass: ThrottlerGuard
   }],

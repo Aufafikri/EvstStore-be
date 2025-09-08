@@ -100,7 +100,7 @@ export class AuthService {
           googleId: id,
           email,
           name: displayName,
-          profileImage: photo,
+          avatar: photo,
           isVerified: true,
         },
       });

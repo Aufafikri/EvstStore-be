@@ -39,7 +39,7 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
                     githubId: id,
                     email: emails[0].value,
                     name: username,
-                    profileImage: photos[0].value,
+                    avatar: photos[0].value,
                     isVerified: true,
                     loginMethod: 'GITHUB'
                 }

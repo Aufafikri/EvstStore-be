@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Request, Res, UnauthorizedException, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Req, Request, Res, UnauthorizedException, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto'
 import { JwtAuthGuard } from 'src/auth/guards/jwt.auth.guard';
@@ -7,6 +7,7 @@ import { Response } from 'express';
 import { UploadProfileImage } from 'src/decorators/uploadProfileImage';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { SkipThrottle } from '@nestjs/throttler';
+import { FileInterceptor } from '@nestjs/platform-express';
 // @SkipThrottle()
 @Controller('users')
 export class UsersController {
@@ -53,6 +54,15 @@ export class UsersController {
   //     profileImage: profileImage?.path
   //   })
   // }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('/profile')
+  @UseInterceptors(FileInterceptor("file"))
+  public async updateAvatarImage(@Req() req, @UploadedFile() file: Express.Multer.File ) {
+    const userId = req.user.id
+    return this.usersService.updateAvatarImage(userId, file)
+  }
+
 
   // @UseGuards(JwtAuthGuard)
   // @Patch('/profile/image/:userId')
