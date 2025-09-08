@@ -4,12 +4,27 @@ import {
   IsObject,
   IsOptional,
   IsString,
+  IsEnum
 } from 'class-validator';
 
+enum CategoryName {
+  ELECTRONICS = 'ELECTRONICS',
+  FASHION = 'FASHION',
+  FOOD = 'FOOD',
+  BOOKS = 'BOOKS',
+  BEAUTY = 'BEAUTY',
+  HOME = 'HOME',
+  TOYS = 'TOYS',
+  SPORTS = 'SPORTS',
+  OTHER = 'OTHER',
+}
+
 class CreateCategoryDto {
-  @IsString()
+  @IsEnum(CategoryName, {
+    message: 'name must be one of: ELECTRONICS, FASHION, FOOD, BOOKS, BEAUTY, HOME, TOYS, SPORTS, OTHER',
+  })
   @IsNotEmpty()
-  name: string;
+  name: CategoryName;
 
   @IsOptional()
   @IsString()

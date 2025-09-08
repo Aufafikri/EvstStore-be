@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/lib/prisma.service';
 import { CreateAddressDto } from './dto/create-address.dto';
+import { UpdateAddressDto } from './dto/update-address.dto';
 
 @Injectable()
 export class AddressService {
@@ -51,5 +52,16 @@ export class AddressService {
               message: 'An error occurred while deleting the address.',
             }, HttpStatus.INTERNAL_SERVER_ERROR);
           }
+    }
+
+    public async updateAddress(addressId: string, updateAddressDto: UpdateAddressDto) {
+        return this.prisma.address.update({
+            where: {
+                id: addressId
+            },
+            data: {
+                ...updateAddressDto
+            }
+        })
     }
 }

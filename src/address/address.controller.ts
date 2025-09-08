@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AddressService } from './address.service';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { CreateAddressInterceptor } from './interceptor/create-address.interceptor';
@@ -7,6 +7,7 @@ import { GetAddressByIdInterceptor } from './interceptor/getById-address.interce
 import { DeleteAddressInterceptor } from './interceptor/delete-address.interceptor';
 import { GetAddressByUserIdInterceptor } from './interceptor/getbyUserId-address.interceptor';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.auth.guard';
+import { UpdateAddressDto } from './dto/update-address.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('address')
@@ -41,5 +42,10 @@ export class AddressController {
   @Delete('/:addressId')
   public async deleteAddress(@Param('addressId') addressId: string ) {
     return this.addressService.deleteAddress(addressId)
+  }
+
+  @Put('/:addressId')
+  public async updateAddress(@Param('addressId') addressId: string, @Body() updateAddressDto: UpdateAddressDto  ) {
+    return this.addressService.updateAddress(addressId, updateAddressDto)
   }
 }

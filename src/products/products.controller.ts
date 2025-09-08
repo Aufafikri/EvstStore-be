@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Query,
   UploadedFile,
   UploadedFiles,
   UseGuards,
@@ -16,6 +17,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt.auth.guard'
 import { UploadProductImages } from 'src/decorators/uploadProductImage';
 import { GetAllProductsInterceptor } from './interceptors/getAll-products.interceptor';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
+import { GetProductsDto } from './dto/get-products-category.dto';
 
 // @SkipThrottle()
 @Controller('products')
@@ -29,6 +31,11 @@ export class ProductsController {
     return this.productsService.getAllProducts()
   }
 
+  @Get('/category')
+  public async getProductsByCategories(@Query() query: GetProductsDto) {
+    return this.productsService.getProductsByCategories(query)
+  }
+
   @Get('/:productId')
   public async getProductById(@Param('productId') productId: string ) {
     return this.productsService.getProductById(productId)
@@ -40,22 +47,10 @@ export class ProductsController {
   public async createProduct(
     @Param('merchantId') merchantId: string,
     @Body() createProductDto: CreateProductDto,
-    @UploadedFiles() productImages: Array<Express.Multer.File>,
   ) {
-    console.log('Uploaded Files:', productImages);
-
-    if (!productImages || productImages.length === 0) {
-      throw new Error('No files uploaded');
-    }
-
-    const imagePaths = productImages.map((image) => `/uploads/product-images/${image.filename}`);
-    console.log('Image Paths:', imagePaths);
-    console.log('product', createProductDto)
-    console.log('merchant', merchantId)
     return this.productsService.createProduct(
       createProductDto,
       merchantId,
-      imagePaths,
     );
   }
 }

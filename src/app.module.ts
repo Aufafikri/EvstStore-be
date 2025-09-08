@@ -20,6 +20,8 @@ import { GithubStrategy } from './auth/strategies/github.strategy';
 import { TransactionModule } from './transaction/transaction.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
 import { APP_GUARD } from '@nestjs/core';
+import { CategoriesModule } from './categories/categories.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 @Module({
   imports: [
     JwtModule.register({
@@ -56,6 +58,8 @@ import { APP_GUARD } from '@nestjs/core';
     AdminModule,
     AddressModule,
     TransactionModule,
+    CategoriesModule,
+    CloudinaryModule
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy, GoogleStrategy, GithubStrategy, {

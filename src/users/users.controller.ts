@@ -44,31 +44,31 @@ export class UsersController {
     return this.usersService.createUser(dataUser)
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Put('/profile/:userId') 
-  @UploadProfileImage()
-  public async updateUserProfile(@Param('userId') userId: string, @Body() updateUserDto: UpdateUserDto, @UploadedFile() profileImage: Express.Multer.File ) {
-    return this.usersService.updateUserProfile(userId, {
-      ...updateUserDto,
-      profileImage: profileImage?.path
-    })
-  }
+  // @UseGuards(JwtAuthGuard)
+  // @Put('/profile/:userId') 
+  // @UploadProfileImage()
+  // public async updateUserProfile(@Param('userId') userId: string, @Body() updateUserDto: UpdateUserDto, @UploadedFile() profileImage: Express.Multer.File ) {
+  //   return this.usersService.updateUserProfile(userId, {
+  //     ...updateUserDto,
+  //     profileImage: profileImage?.path
+  //   })
+  // }
 
-  @UseGuards(JwtAuthGuard)
-  @Patch('/profile/image/:userId')
-  @UploadProfileImage()
-  public async updateProfileImage(@Param('userId') userId: string, @Body() updateUserDto: UpdateUserDto, @UploadedFile() profileImage: Express.Multer.File  ) {
-    if (!profileImage) {
-      console.error('No file uploaded');
-      throw new Error('No file uploaded');
-    }
+  // @UseGuards(JwtAuthGuard)
+  // @Patch('/profile/image/:userId')
+  // @UploadProfileImage()
+  // public async updateProfileImage(@Param('userId') userId: string, @Body() updateUserDto: UpdateUserDto, @UploadedFile() profileImage: Express.Multer.File  ) {
+  //   if (!profileImage) {
+  //     console.error('No file uploaded');
+  //     throw new Error('No file uploaded');
+  //   }
 
-    console.log('Received file:', profileImage);
-    console.log('File path:', profileImage?.path);
-    return this.usersService.updateProfileImage(userId, {
-      profileImage: profileImage?.path
-    })
-  }
+  //   console.log('Received file:', profileImage);
+  //   console.log('File path:', profileImage?.path);
+  //   return this.usersService.updateProfileImage(userId, {
+  //     profileImage: profileImage?.path
+  //   })
+  // }
 
   @UseGuards(JwtAuthGuard)
   @Patch('/profile/name/:userId')

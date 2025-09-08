@@ -1,10 +1,11 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/lib/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { MailService } from 'src/mail/mail.service';
 import { JwtService } from '@nestjs/jwt';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class UsersService {
@@ -12,6 +13,7 @@ export class UsersService {
     private readonly prisma: PrismaService,
     private readonly mailService: MailService,
     private readonly jwtService: JwtService,
+    private readonly cloudinaryService: CloudinaryService
   ) {}
 
   private generateOtp(): string {
@@ -44,6 +46,7 @@ export class UsersService {
     if (!userEmail) {
       throw new Error('Email is required');
     }
+    
     return this.prisma.user.findUnique({
       where: {
         email: userEmail,
@@ -110,17 +113,16 @@ export class UsersService {
     }
   }
 
-  public async updateUserProfile(userId: string, updateUserDto: UpdateUserDto) {
-    return this.prisma.user.update({
-      where: {
-        id: userId
-      },
-      data: {
-        // ...updateUserDto,
-        profileImage: updateUserDto.profileImage || undefined
-      }
-    })
-  }
+  // public async updateUserProfile(userId: string, updateUserDto: UpdateUserDto) {
+  //   return this.prisma.user.update({
+  //     where: {
+  //       id: userId
+  //     },
+  //     data: {
+  //       profileImage: updateUserDto.profileImage || undefined
+  //     }
+  //   })
+  // }
 
   public async updateProfileName(userId: string, updateUserDto: UpdateUserDto) {
     return this.prisma.user.update({
@@ -133,13 +135,34 @@ export class UsersService {
     })
   }
 
-  public async updateProfileImage(userId: string, updateUserDto: UpdateUserDto) {
+  // public async updateProfileImage(userId: string, updateUserDto: UpdateUserDto) {
+  //   return this.prisma.user.update({
+  //     where: {
+  //       id: userId
+  //     },
+  //     data: {
+  //       profileImage: updateUserDto.profileImage || undefined || null
+  //     }
+  //   })
+  // }
+
+  public async updateAvatarImage(userId: string, file: Express.Multer.File) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId
+      }
+    })
+
+    if(!user) throw new NotFoundException('user not found')
+
+    const result = await this.cloudinaryService.uploadImage(file.path)
+
     return this.prisma.user.update({
       where: {
         id: userId
       },
       data: {
-        profileImage: updateUserDto.profileImage || undefined || null
+        avatar: result.secure_url
       }
     })
   }

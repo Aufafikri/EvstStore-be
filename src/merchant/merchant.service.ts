@@ -7,6 +7,10 @@ import { User } from '@prisma/client';
 export class MerchantService {
     constructor(private readonly prisma: PrismaService) {}
 
+    public async getAllMerchants() {
+        return this.prisma.merchant.findMany({})
+    }
+
     public async getAllMerchantsForAdmin(user: User) {
         if(user.role !== 'ADMIN') {
             throw new Error('Access Denied')

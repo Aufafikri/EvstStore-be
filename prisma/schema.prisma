@@ -18,7 +18,7 @@ model User {
   email        String      @unique
   password     String?
   name         String
-  profileImage String?
+  avatar       String?
   phone        Int?
   googleId     String?     @unique
   githubId     String?     @unique
@@ -85,30 +85,66 @@ model RefreshToken {
   updatedAt DateTime @updatedAt
 }
 
+enum Tagname {
+  NEWPRODUCT
+  CHEAP
+  RECOMENDED
+}
+
+model Tag {
+  id   String   @id @default(cuid())
+  tags Tagname?
+
+  Tags ProductTags[]
+}
+
+model ProductTags {
+  id String @id @default(cuid())
+
+  Product   Product @relation(fields: [productId], references: [id])
+  productId String
+  Tag       Tag     @relation(fields: [tagId], references: [id])
+  tagId     String
+}
+
 model Product {
   id          String   @id @default(cuid())
   name        String
   description String
   price       Int
   stock       Int
-  image       String[]
+  image       String?
 
-  Category   Category? @relation(fields: [categoryId], references: [id])
+  Category   Category? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   categoryId String
   Merchant   Merchant? @relation(fields: [merchantId], references: [id])
   merchantId String?
 
   OrderItem OrderItem[]
   Review    Review[]
-  Order Order[]
+  Order     Order[]
+
+  ProductTags ProductTags[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
+enum CategoryName {
+  ELECTRONICS
+  FASHION
+  FOOD
+  BOOKS
+  BEAUTY
+  HOME
+  TOYS
+  SPORTS
+  OTHER
+}
+
 model Category {
   id          String  @id @default(cuid())
-  name        String  @unique
+  name        CategoryName
   type        String?
   label       String?
   size        String?
@@ -135,7 +171,7 @@ model Order {
   userId    String
   Address   Address @relation(fields: [addressId], references: [id])
   addressId String
-  Product Product @relation(fields: [productId], references: [id])
+  Product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String
 
   totalAmount Int

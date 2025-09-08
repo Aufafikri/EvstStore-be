@@ -21,6 +21,11 @@ import { UploadMerchantImage } from 'src/decorators/uploadMerchantImage';
 export class MerchantController {
   constructor(private readonly merchantService: MerchantService) {}
 
+  @Get()
+  public async getAllMerchants() {
+    return this.merchantService.getAllMerchants()
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get('/profile/:userId')
   public async getMerchantUserId(@Param('userId') userId: string ) {
