@@ -34,11 +34,7 @@ export class UsersService {
         Address: true
       }
     });
-
-    if(user && user.avatar) {
-      user.avatar = `http://localhost:5000/${user.avatar.replace(/\\/g, '/')}` 
-  }
-
+    
     return user
   }
 
@@ -113,17 +109,6 @@ export class UsersService {
     }
   }
 
-  // public async updateUserProfile(userId: string, updateUserDto: UpdateUserDto) {
-  //   return this.prisma.user.update({
-  //     where: {
-  //       id: userId
-  //     },
-  //     data: {
-  //       profileImage: updateUserDto.profileImage || undefined
-  //     }
-  //   })
-  // }
-
   public async updateProfileName(userId: string, updateUserDto: UpdateUserDto) {
     return this.prisma.user.update({
       where: {
@@ -134,17 +119,6 @@ export class UsersService {
       }
     })
   }
-
-  // public async updateProfileImage(userId: string, updateUserDto: UpdateUserDto) {
-  //   return this.prisma.user.update({
-  //     where: {
-  //       id: userId
-  //     },
-  //     data: {
-  //       profileImage: updateUserDto.profileImage || undefined || null
-  //     }
-  //   })
-  // }
 
   public async updateAvatarImage(userId: string, file: Express.Multer.File) {
     const user = await this.prisma.user.findUnique({

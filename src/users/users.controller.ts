@@ -22,12 +22,6 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   public async getUserProfile(@Request() req: any) {
     return await this.usersService.getUserById(req.user.id);
-
-    // if(!userProfile.isVerified) {
-    //   throw new UnauthorizedException('user is not verified')
-    // }
-    
-    // return userProfile;
   }
 
   @Get('/:userId')
@@ -45,40 +39,12 @@ export class UsersController {
     return this.usersService.createUser(dataUser)
   }
 
-  // @UseGuards(JwtAuthGuard)
-  // @Put('/profile/:userId') 
-  // @UploadProfileImage()
-  // public async updateUserProfile(@Param('userId') userId: string, @Body() updateUserDto: UpdateUserDto, @UploadedFile() profileImage: Express.Multer.File ) {
-  //   return this.usersService.updateUserProfile(userId, {
-  //     ...updateUserDto,
-  //     profileImage: profileImage?.path
-  //   })
-  // }
-
   @UseGuards(JwtAuthGuard)
-  @Patch('/profile')
+  @Patch('/profile/image/:userId')
   @UseInterceptors(FileInterceptor("file"))
-  public async updateAvatarImage(@Req() req, @UploadedFile() file: Express.Multer.File ) {
-    const userId = req.user.id
+  public async updateAvatarImage(@Param("userId") userId: string , @UploadedFile() file: Express.Multer.File ) {
     return this.usersService.updateAvatarImage(userId, file)
   }
-
-
-  // @UseGuards(JwtAuthGuard)
-  // @Patch('/profile/image/:userId')
-  // @UploadProfileImage()
-  // public async updateProfileImage(@Param('userId') userId: string, @Body() updateUserDto: UpdateUserDto, @UploadedFile() profileImage: Express.Multer.File  ) {
-  //   if (!profileImage) {
-  //     console.error('No file uploaded');
-  //     throw new Error('No file uploaded');
-  //   }
-
-  //   console.log('Received file:', profileImage);
-  //   console.log('File path:', profileImage?.path);
-  //   return this.usersService.updateProfileImage(userId, {
-  //     profileImage: profileImage?.path
-  //   })
-  // }
 
   @UseGuards(JwtAuthGuard)
   @Patch('/profile/name/:userId')
@@ -99,12 +65,6 @@ export class UsersController {
     return this.usersService.updatePhoneNumber(userId, { phoneNumber: updateProfilePhone.phoneNumber })
   }
   
-
-  // @UseGuards(JwtAuthGuard)
-  // @Delete('/delete-account/:userId')
-  // public async deleteUser(@Param('userId') userId: string ) {
-  //   return this.usersService.deleteUser(userId)
-  // }
   
   @UseGuards(JwtAuthGuard)
   @Patch('/phone/number/:userId')
